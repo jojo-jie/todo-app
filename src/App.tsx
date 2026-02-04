@@ -23,7 +23,7 @@ import { useTodoStore } from './store/todoStore';
 import { useTodos } from './hooks/useTodos';
 
 function App() {
-  const { darkMode, todos, setTodos } = useTodoStore();
+  const { theme, todos, setTodos } = useTodoStore();
   const { reorder, loadTodos } = useTodos();
   const [mounted, setMounted] = useState(false);
 
@@ -40,14 +40,17 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (mounted) {
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const systemTheme = media.matches ? 'dark' : 'light';
+    if (theme !== systemTheme) {
+      useTodoStore.getState().setTheme(systemTheme);
     }
-  }, [darkMode, mounted]);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme, mounted]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -76,8 +79,8 @@ function App() {
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <div className="min-h-screen bg-white">
-        <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-[color:var(--color-background)]">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <Header />
           <AddTodo />
           <FilterBar />

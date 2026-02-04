@@ -1,48 +1,48 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222.2 84% 4.9%);
+  --color-background: hsl(210 33% 97%);
+  --color-foreground: hsl(222 47% 11%);
   --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 84% 4.9%);
+  --color-card-foreground: hsl(222 47% 11%);
   --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222.2 84% 4.9%);
-  --color-primary: hsl(222.2 47.4% 11.2%);
+  --color-popover-foreground: hsl(222 47% 11%);
+  --color-primary: hsl(199 89% 48%);
   --color-primary-foreground: hsl(210 40% 98%);
-  --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-muted: hsl(210 40% 96.1%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
-  --color-accent: hsl(210 40% 96.1%);
-  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
-  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-secondary: hsl(210 32% 96%);
+  --color-secondary-foreground: hsl(222 47% 11%);
+  --color-muted: hsl(210 32% 96%);
+  --color-muted-foreground: hsl(215 16% 47%);
+  --color-accent: hsl(197 71% 95%);
+  --color-accent-foreground: hsl(199 89% 28%);
+  --color-destructive: hsl(0 84% 60%);
   --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(222.2 84% 4.9%);
+  --color-border: hsl(214 32% 91%);
+  --color-input: hsl(214 32% 91%);
+  --color-ring: hsl(199 89% 48%);
   --radius: 0.5rem;
 }
 
 .dark {
-  --color-background: hsl(222.2 84% 4.9%);
+  --color-background: hsl(222 47% 11%);
   --color-foreground: hsl(210 40% 98%);
-  --color-card: hsl(222.2 84% 4.9%);
+  --color-card: hsl(222 37% 16%);
   --color-card-foreground: hsl(210 40% 98%);
-  --color-popover: hsl(222.2 84% 4.9%);
+  --color-popover: hsl(222 37% 16%);
   --color-popover-foreground: hsl(210 40% 98%);
-  --color-primary: hsl(210 40% 98%);
-  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-secondary: hsl(217.2 32.6% 17.5%);
+  --color-primary: hsl(199 89% 60%);
+  --color-primary-foreground: hsl(222 47% 11%);
+  --color-secondary: hsl(216 28% 19%);
   --color-secondary-foreground: hsl(210 40% 98%);
-  --color-muted: hsl(217.2 32.6% 17.5%);
-  --color-muted-foreground: hsl(215 20.2% 65.1%);
-  --color-accent: hsl(217.2 32.6% 17.5%);
-  --color-accent-foreground: hsl(210 40% 98%);
-  --color-destructive: hsl(0 62.8% 30.6%);
+  --color-muted: hsl(216 28% 19%);
+  --color-muted-foreground: hsl(215 20% 65%);
+  --color-accent: hsl(197 51% 22%);
+  --color-accent-foreground: hsl(199 89% 70%);
+  --color-destructive: hsl(0 72% 45%);
   --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(217.2 32.6% 17.5%);
-  --color-input: hsl(217.2 32.6% 17.5%);
-  --color-ring: hsl(212.7 26.8% 83.9%);
+  --color-border: hsl(215 28% 22%);
+  --color-input: hsl(215 28% 22%);
+  --color-ring: hsl(199 89% 60%);
 }
 
 @layer base {
@@ -52,5 +52,38 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+  }
+
+  .pretty-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
+  }
+
+  .pretty-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .pretty-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .pretty-scroll::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.6);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  .pretty-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.9);
   }
 }

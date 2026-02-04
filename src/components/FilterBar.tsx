@@ -14,15 +14,15 @@ export function FilterBar() {
 
   return (
     <div className="mb-4">
-      <div className="flex gap-2 justify-center">
+      <div className="flex flex-wrap gap-2 justify-center">
         {filters.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
               filter === f
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-400 hover:text-gray-600'
+                ? 'bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] shadow-sm'
+                : 'text-[color:var(--color-muted-foreground)] hover:text-[color:var(--color-foreground)]'
             }`}
           >
             {filterLabels[f]}

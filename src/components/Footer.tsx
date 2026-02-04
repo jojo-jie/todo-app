@@ -5,11 +5,11 @@ export function Footer() {
   const { language } = useTodoStore();
 
   return (
-    <footer className="border-t border-gray-100 pt-6 mt-8">
+    <footer className="border-t border-[color:var(--color-border)] pt-6 mt-8">
       <div className="text-center">
-        <p className="text-gray-400 text-[13.6px]">
+        <p className="text-[color:var(--color-muted-foreground)] text-[13.6px]">
           {t('footer', language).split('♥')[0]}
-          <span className="text-gray-900 font-bold">
+          <span className="text-[color:var(--color-foreground)] font-bold">
             ♥
           </span>
           {t('footer', language).split('♥')[1]}

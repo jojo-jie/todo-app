@@ -2,13 +2,14 @@ import { create } from 'zustand';
 import type { Todo, FilterType } from '../types';
 
 export type Language = 'zh' | 'en';
+export type ThemeMode = 'light' | 'dark';
 
 interface TodoStore {
   todos: Todo[];
   filter: FilterType;
   search: string;
-  darkMode: boolean;
   language: Language;
+  theme: ThemeMode;
   setTodos: (todos: Todo[]) => void;
   addTodo: (todo: Todo) => void;
   updateTodo: (todo: Todo) => void;
@@ -16,17 +17,23 @@ interface TodoStore {
   toggleTodo: (id: string) => void;
   setFilter: (filter: FilterType) => void;
   setSearch: (search: string) => void;
-  toggleDarkMode: () => void;
+  setTheme: (theme: ThemeMode) => void;
   reorderTodos: (todos: Todo[]) => void;
   setLanguage: (lang: Language) => void;
 }
+
+const getInitialLanguage = (): Language => {
+  if (typeof window === 'undefined') return 'zh';
+  const stored = window.localStorage.getItem('todo_language');
+  return stored === 'en' || stored === 'zh' ? stored : 'zh';
+};
 
 export const useTodoStore = create<TodoStore>((set) => ({
   todos: [],
   filter: 'all',
   search: '',
-  darkMode: false,
-  language: 'zh',
+  language: getInitialLanguage(),
+  theme: 'light',
   setTodos: (todos) => set({ todos }),
   addTodo: (todo) => set((state) => ({ todos: [...state.todos, todo] })),
   updateTodo: (updatedTodo) =>
@@ -45,7 +52,12 @@ export const useTodoStore = create<TodoStore>((set) => ({
     })),
   setFilter: (filter) => set({ filter }),
   setSearch: (search) => set({ search }),
-  toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+  setTheme: (theme) => set({ theme }),
   reorderTodos: (todos) => set({ todos }),
-  setLanguage: (language) => set({ language }),
+  setLanguage: (language) => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('todo_language', language);
+    }
+    set({ language });
+  },
 }));

@@ -1,46 +1,59 @@
 {
   "todos": [
     {
-      "id": "97481772-0cf8-4cec-b46c-bbf41aa321ca",
-      "content": "dfsaf",
-      "completed": true,
-      "priority": "medium",
-      "tags": [],
-      "dueDate": null,
-      "createdAt": "2026-02-03T14:14:13.846Z",
-      "order": 0
-    },
-    {
-      "id": "15dde0bb-0e0d-4216-a785-cd72dfa09bf8",
-      "content": "学习 USE claude",
-      "completed": true,
-      "priority": "medium",
-      "tags": [
-        "JP"
-      ],
-      "dueDate": "2026-02-11",
-      "createdAt": "2026-02-02T14:43:23.398Z",
-      "order": 1
-    },
-    {
-      "id": "1686f183-203c-458b-b960-b5d335244c78",
-      "content": "dasfad",
-      "completed": true,
-      "priority": "medium",
-      "tags": [],
-      "dueDate": null,
-      "createdAt": "2026-02-02T14:10:46.518Z",
-      "order": 2
-    },
-    {
-      "id": "3484733e-a3de-4ce2-a4a6-1e355b9373b3",
-      "content": "test",
+      "id": "141423b8-9bf9-4dbd-a8bb-dc442b073c7c",
+      "content": "# CLAUDE.mddad\n\n本文档为 Claude Code (claude.ai/code) 在此代码仓库中工作提供指导。\n\n## 项目概述\n\n一个 React 19 待办事项应用，支持拖拽排序、主题切换（深色/浅色/跟随系统）和中英文国际化。数据通过本地 Node.js 后端和 JSON 文件持久化存储。\n\n## 命令\n\n```bash\n# 启动开发服务器（需要同时运行）\nnode server/index.js          # 后端 (端口 3001)\nnpm run dev                   # 前端 (端口 5173)\n\n# 构建和检查\nnpm run build                 # TypeScript 检查 + Vite 构建\nnpm run lint                  # ESLint 检查\n```\n\n## 架构\n\n### 状态管理 (Zustand)\n\n中央仓库 [src/store/todoStore.ts](src/store/todoStore.ts) 管理：\n- `todos`: 待办事项数组\n- `filter`: 当前筛选条件 ('all' | 'active' | 'completed')\n- `search`: 搜索关键词\n- `darkMode`: 深色模式开关\n- `language`: 当前语言 ('zh' | 'en')\n\n### 数据流\n\n1. **API 层**: [src/api/todoApi.ts](src/api/todoApi.ts) - 发送 Axios 请求到 localhost:3001\n2. **Hooks**: [src/hooks/useTodos.ts](src/hooks/useTodos.ts) - 包装 API 调用，乐观更新\n3. **组件**: 通过 `useTodoStore()` 订阅状态\n\n### 后端\n\n简单的无 Express Node.js HTTP 服务器 [server/index.js](server/index.js)：\n- GET `/api/todos` - 获取所有待办事项\n- POST `/api/todos` - 创建待办事项\n- PUT `/api/todos` - 更新待办事项\n- DELETE `/api/todos/:id` - 删除待办事项\n- PUT `/api/todos/bulk` - 重新排序待办事项\n\n数据存储在 `data/todos.json`。\n\n### 国际化\n\n翻译函数 `t(key, lang)` 位于 [src/locales/index.ts](src/locales/index.ts)。包含以下键：title, subtitle, addTask, all, active, completed, toggleTheme, toggleLang, edit, delete, save, cancel, priority, footer。\n\n### 拖拽排序\n\n使用 [src/App.tsx](src/App.tsx) 中的 @dnd-kit，`SortableContext` 包裹 `TodoList`。重新排序立即更新本地状态，然后同步到 API。\n\n### 关键类型\n\n```typescript\n// src/types/index.ts\ninterface Todo {\n  id: string;\n  content: string;\n  completed: boolean;\n  priority: 'low' | 'medium' | 'high';\n  tags: string[];\n  dueDate: string | null;\n  createdAt: string;\n  order: number;\n}\n```\n\n## 组件结构\n\n- `Header` - 应用标题、主题/语言切换按钮\n- `AddTodo` - 新任务输入表单\n- `FilterBar` - 筛选标签页 (all/active/completed)\n- `TodoList` - 可拖拽的待办事项列表\n- `TodoItem` - 单个待办事项，支持编辑和删除\n- `Footer` - 页脚文字\n- `StatsCard` - 统计信息展示\n\n## 样式\n\nTailwind CSS v4，使用 `dark:` 变体。主容器在浅色模式下使用 `bg-white`，组件需要添加 `dark:` 类以支持深色模式。\n\n## 注意事项\n每次回答都使用中文",
       "completed": false,
       "priority": "medium",
       "tags": [],
       "dueDate": null,
-      "createdAt": "2026-02-04T13:27:40.710Z",
-      "order": 1770211660710
+      "createdAt": "2026-02-04T14:34:56.418Z",
+      "completedAt": null,
+      "order": 0
+    },
+    {
+      "id": "97ce1699-5d6b-4002-9334-c0249d2a7be1",
+      "content": "fdafasf",
+      "completed": true,
+      "priority": "medium",
+      "tags": [],
+      "dueDate": null,
+      "createdAt": "2026-02-04T14:32:54.743Z",
+      "completedAt": "2026-02-04T14:32:57.562Z",
+      "order": 1
+    },
+    {
+      "id": "98c00a8b-efaa-44b9-a7e8-2d225fa3709a",
+      "content": "oo",
+      "completed": true,
+      "priority": "high",
+      "tags": [],
+      "dueDate": null,
+      "createdAt": "2026-02-04T14:53:23.503Z",
+      "completedAt": "2026-02-04T14:54:34.779Z",
+      "order": 2
+    },
+    {
+      "id": "ea8c9c09-e0b4-417e-9056-ff03a3a869ca",
+      "content": "地方",
+      "completed": false,
+      "priority": "medium",
+      "tags": [],
+      "dueDate": null,
+      "createdAt": "2026-02-04T14:35:57.861Z",
+      "completedAt": null,
+      "order": 3
+    },
+    {
+      "id": "12f2c275-0ceb-4ae5-b079-a84b829f0ef7",
+      "content": "fffff",
+      "completed": true,
+      "priority": "low",
+      "tags": [],
+      "dueDate": null,
+      "createdAt": "2026-02-04T14:53:17.232Z",
+      "completedAt": "2026-02-04T15:18:07.069Z",
+      "order": 4
     }
   ]
 }

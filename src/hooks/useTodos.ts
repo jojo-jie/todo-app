@@ -22,6 +22,12 @@ export function useTodos() {
     filter,
     search,
   } = useTodoStore();
+  const manualOrderKey = 'todo_manual_order';
+  const priorityRank: Record<Todo['priority'], number> = {
+    high: 0,
+    medium: 1,
+    low: 2,
+  };
 
   useEffect(() => {
     loadTodos();
@@ -30,6 +36,25 @@ export function useTodos() {
   const loadTodos = async () => {
     try {
       const data = await todoApi.getAll();
+      const hasManual =
+        typeof window !== 'undefined' &&
+        window.localStorage.getItem(manualOrderKey) === '1';
+
+      if (!hasManual) {
+        const sorted = [...data].sort((a, b) => {
+          const rankDiff = priorityRank[a.priority] - priorityRank[b.priority];
+          if (rankDiff !== 0) return rankDiff;
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        });
+        const normalized = sorted.map((todo, index) => ({
+          ...todo,
+          order: index,
+        }));
+        setTodos(normalized);
+        await todoApi.reorder(normalized);
+        return;
+      }
+
       setTodos(data);
     } catch (error) {
       console.error('Failed to load todos:', error);
@@ -37,6 +62,9 @@ export function useTodos() {
   };
 
   const createTodo = async (input: CreateTodoInput) => {
+    const hasManual =
+      typeof window !== 'undefined' &&
+      window.localStorage.getItem(manualOrderKey) === '1';
     const newTodo: Todo = {
       id: uuidv4(),
       content: input.content,
@@ -45,16 +73,38 @@ export function useTodos() {
       tags: input.tags,
       dueDate: input.dueDate,
       createdAt: new Date().toISOString(),
+      completedAt: null,
       order: Date.now(),
     };
     const created = await todoApi.create(newTodo);
+
+    if (!hasManual) {
+      const sorted = [...todos, created].sort((a, b) => {
+        const rankDiff = priorityRank[a.priority] - priorityRank[b.priority];
+        if (rankDiff !== 0) return rankDiff;
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+      const normalized = sorted.map((todo, index) => ({
+        ...todo,
+        order: index,
+      }));
+      setTodos(normalized);
+      await todoApi.reorder(normalized);
+      return;
+    }
+
     addTodo(created);
   };
 
   const toggleTodo = async (id: string) => {
     const todo = todos.find((t) => t.id === id);
     if (todo) {
-      const updated = { ...todo, completed: !todo.completed };
+      const willComplete = !todo.completed;
+      const updated = {
+        ...todo,
+        completed: willComplete,
+        completedAt: willComplete ? new Date().toISOString() : null,
+      };
       await todoApi.update(updated);
       updateTodo(updated);
     }
@@ -71,6 +121,9 @@ export function useTodos() {
   };
 
   const reorder = async (newTodos: typeof todos) => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(manualOrderKey, '1');
+    }
     reorderTodos(newTodos);
     await todoApi.reorder(newTodos);
   };

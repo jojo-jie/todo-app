@@ -8,6 +8,7 @@ export interface Todo {
   tags: string[];
   dueDate: string | null;
   createdAt: string;
+  completedAt?: string | null;
   order: number;
 }
 
@@ -15,7 +16,6 @@ export interface TodoState {
   todos: Todo[];
   filter: 'all' | 'active' | 'completed';
   search: string;
-  darkMode: boolean;
 }
 
 export type FilterType = 'all' | 'active' | 'completed';

@@ -21,7 +21,7 @@ export function TodoList() {
   return (
     <div className="space-y-4">
       {/* Stats Cards */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <StatsCard count={allCount} label={labels.all} color="indigo" />
         <StatsCard count={activeCount} label={labels.active} color="pink" />
         <StatsCard count={completedCount} label={labels.completed} color="gradient" />
@@ -30,7 +30,7 @@ export function TodoList() {
       {/* Todo Items */}
       <div className="space-y-3">
         {todos.length === 0 ? (
-          <p className="text-center text-[#6b7280] py-8">
+          <p className="text-center text-[color:var(--color-muted-foreground)] py-8">
             {t('noTasks', language)}
           </p>
         ) : (
