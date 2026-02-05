@@ -26,8 +26,7 @@ const openDatabase = (sqlite: Awaited<ReturnType<typeof sqlite3InitModule>>) => 
     return new sqlite.oo1.OpfsDb(DB_PATH, 'c');
   }
   if (sqlite.oo1?.DB) {
-    const kvUrl = `file:${DB_PATH}?vfs=kvvfs`;
-    return new sqlite.oo1.DB(kvUrl, 'ct');
+    return new sqlite.oo1.DB(DB_PATH, 'ct');
   }
   throw new Error('No supported SQLite VFS available in this environment.');
 };
