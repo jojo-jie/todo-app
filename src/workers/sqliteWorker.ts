@@ -21,10 +21,15 @@ let db: ReturnType<typeof openDatabase> | null = null;
 const DB_PATH = '/todo-app/todos.sqlite3';
 
 const openDatabase = (sqlite: Awaited<ReturnType<typeof sqlite3InitModule>>) => {
-  if (!sqlite.oo1?.OpfsDb) {
-    throw new Error('OPFS not available. Ensure COOP/COEP headers are enabled.');
+  const isCOI = (self as unknown as { crossOriginIsolated?: boolean }).crossOriginIsolated === true;
+  if (isCOI && sqlite.oo1?.OpfsDb) {
+    return new sqlite.oo1.OpfsDb(DB_PATH, 'c');
   }
-  return new sqlite.oo1.OpfsDb(DB_PATH, 'c');
+  if (sqlite.oo1?.DB) {
+    const kvUrl = `file:${DB_PATH}?vfs=kvvfs`;
+    return new sqlite.oo1.DB(kvUrl, 'ct');
+  }
+  throw new Error('No supported SQLite VFS available in this environment.');
 };
 
 const initDb = async () => {
@@ -157,9 +162,10 @@ const reorderTodos = (todos: Todo[]) => {
 };
 
 const handleRequest = async (event: MessageEvent<WorkerRequest>) => {
-  const { id, type, payload } = event.data;
+  const { id, type } = event.data;
+  const payload = (event.data as unknown as { payload?: unknown }).payload as any;
   const respond = (response: WorkerResponse) => {
-    (self as DedicatedWorkerGlobalScope).postMessage(response);
+    (self as any).postMessage(response);
   };
 
   try {
@@ -203,4 +209,4 @@ const handleRequest = async (event: MessageEvent<WorkerRequest>) => {
   }
 };
 
-(self as DedicatedWorkerGlobalScope).onmessage = handleRequest;
+(self as any).onmessage = handleRequest;
