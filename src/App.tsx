@@ -10,9 +10,7 @@ import {
 import type { DragEndEvent } from '@dnd-kit/core';
 import {
   arrayMove,
-  SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Header } from './components/Header';
 import { AddTodo } from './components/AddTodo';
@@ -84,9 +82,7 @@ function App() {
           <Header />
           <AddTodo />
           <FilterBar />
-          <SortableContext items={todos.map(t => t.id)} strategy={verticalListSortingStrategy}>
-            <TodoList />
-          </SortableContext>
+          <TodoList />
           <Footer />
         </div>
       </div>

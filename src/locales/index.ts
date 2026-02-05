@@ -17,6 +17,8 @@ export const translations: Record<Language, Record<string, string>> = {
     tags: '标签',
     dueDate: '截止日期',
     noTasks: '暂无任务',
+    searchPlaceholder: '搜索任务信息...',
+    clearSearch: '清空搜索',
     export: '导出数据',
     toggleTheme: '切换主题',
     toggleLang: '切换语言',
@@ -34,6 +36,7 @@ export const translations: Record<Language, Record<string, string>> = {
     cancel: '取消',
     priority: '优先级',
     footer: '用 ♥ 打造，让生活更美好',
+    storageNote: '数据仅存于本地浏览器（SQLite WASM + OPFS），不上传服务器',
   },
   en: {
     title: 'Flowy Todo',
@@ -51,6 +54,8 @@ export const translations: Record<Language, Record<string, string>> = {
     tags: 'Tags',
     dueDate: 'Due Date',
     noTasks: 'No tasks yet',
+    searchPlaceholder: 'Search tasks...',
+    clearSearch: 'Clear search',
     export: 'Export data',
     toggleTheme: 'Toggle theme',
     toggleLang: 'Switch language',
@@ -68,6 +73,7 @@ export const translations: Record<Language, Record<string, string>> = {
     cancel: 'Cancel',
     priority: 'Priority',
     footer: 'Made with ♥ to make life better',
+    storageNote: 'Data stays in your browser (SQLite WASM + OPFS), never uploaded',
   },
 };
 

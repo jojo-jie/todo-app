@@ -16,8 +16,7 @@
 
 ## 项目概览
 
-- React 19 待办事项应用，前端使用 Vite，后端为 Node.js HTTP 服务器。
-- 数据存储在 `data/todos.json`，API 由 `server/index.js` 提供。
+- React 19 待办事项应用，前端使用 Vite，数据完全存储在客户端（SQLite WASM + OPFS）。
 - 状态管理使用 Zustand，详情见 `src/store/todoStore.ts`。
  - 主题切换为单按钮（浅色/深色），首次进入根据系统深浅色初始化。
  - 语言切换为单按钮，默认中文，需持久化到本地存储（刷新保持）。
@@ -27,13 +26,21 @@
  - 添加任务输入框为可自动增高的 textarea（最多 3 行），超长出现美化滚动条。
  - 任务行右下角显示时间信息：未完成显示创建时间；完成后显示创建/完成时间与用时；用时单位根据时长自动切换（小时/分钟/秒，中文/英文自适应）。
  - 编辑任务通过弹窗完成，弹窗内保持原格式文本并提供保存按钮。
- - 拖拽排序通过任务行上的拖拽手柄触发。
+- 拖拽排序通过任务行上的拖拽手柄触发。
+
+## 存储与隐私（补充摘要）
+
+- 已移除后端与 `data/`，仅保留前端应用。
+- 采用 SQLite WASM + OPFS，运行在 Web Worker 中，数据不上传服务器。
+- OPFS 文件为虚拟路径：`/todo-app/todos.sqlite3`（浏览器内部存储，用户无可见本地路径）。
+- 依赖：`@sqlite.org/sqlite-wasm`（当前锁定版本：`3.43.0-build1`）。
+- Vite 已配置 COOP/COEP 头以支持 OPFS/WASM，并排除 `@sqlite.org/sqlite-wasm` 的预构建。
 
 ## 常用命令
 
 ```bash
-# 启动开发服务器（需要同时运行）
-node server/index.js          # 后端 (端口 3001)
+# 启动开发服务器
+npm install
 npm run dev                   # 前端 (端口 5173)
 
 # 构建和检查

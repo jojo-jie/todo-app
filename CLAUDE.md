@@ -4,13 +4,13 @@
 
 ## 项目概述
 
-一个 React 19 待办事项应用，支持拖拽排序、主题切换（深色/浅色/跟随系统）和中英文国际化。数据通过本地 Node.js 后端和 JSON 文件持久化存储。
+一个 React 19 待办事项应用，支持拖拽排序、主题切换（深色/浅色/跟随系统）和中英文国际化。数据通过客户端 SQLite WASM + OPFS 持久化存储。
 
 ## 命令
 
 ```bash
-# 启动开发服务器（需要同时运行）
-node server/index.js          # 后端 (端口 3001)
+# 启动开发服务器
+npm install
 npm run dev                   # 前端 (端口 5173)
 
 # 构建和检查
@@ -35,16 +35,12 @@ npm run lint                  # ESLint 检查
 2. **Hooks**: [src/hooks/useTodos.ts](src/hooks/useTodos.ts) - 包装 API 调用，乐观更新
 3. **组件**: 通过 `useTodoStore()` 订阅状态
 
-### 后端
+### 数据持久化
 
-简单的无 Express Node.js HTTP 服务器 [server/index.js](server/index.js)：
-- GET `/api/todos` - 获取所有待办事项
-- POST `/api/todos` - 创建待办事项
-- PUT `/api/todos` - 更新待办事项
-- DELETE `/api/todos/:id` - 删除待办事项
-- PUT `/api/todos/bulk` - 重新排序待办事项
-
-数据存储在 `data/todos.json`。
+- 使用 SQLite WASM，运行在 Web Worker 内，通过 OPFS（Origin Private File System）持久化到浏览器本地存储。
+- 虚拟路径：`/todo-app/todos.sqlite3`（浏览器内部虚拟路径，用户不可见）
+- 依赖：`@sqlite.org/sqlite-wasm`（当前锁定版本：`3.43.0-build1`）
+- 需要 COOP/COEP 响应头（Vite 已配置在 `vite.config.ts`）
 
 ### 国际化
 

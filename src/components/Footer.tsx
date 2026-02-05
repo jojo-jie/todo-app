@@ -14,6 +14,9 @@ export function Footer() {
           </span>
           {t('footer', language).split('♥')[1]}
         </p>
+        <p className="mt-2 text-[12px] text-[color:var(--color-muted-foreground)]">
+          {t('storageNote', language)}
+        </p>
       </div>
     </footer>
   );

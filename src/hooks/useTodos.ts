@@ -128,16 +128,29 @@ export function useTodos() {
     await todoApi.reorder(newTodos);
   };
 
+  const normalizedSearch = search.trim().toLowerCase();
+  const searchTokens = normalizedSearch.split(/\s+/).filter(Boolean);
+
+  const matchesSearch = (todo: Todo) => {
+    if (searchTokens.length === 0) return true;
+    const haystack = [
+      todo.content,
+      todo.priority,
+      todo.dueDate ?? '',
+      ...todo.tags,
+    ]
+      .join(' ')
+      .toLowerCase();
+    return searchTokens.every((token) => haystack.includes(token));
+  };
+
   const filteredTodos = todos
     .filter((todo) => {
       if (filter === 'active') return !todo.completed;
       if (filter === 'completed') return todo.completed;
       return true;
     })
-    .filter((todo) =>
-      todo.content.toLowerCase().includes(search.toLowerCase()) ||
-      todo.tags.some((tag) => tag.toLowerCase().includes(search.toLowerCase()))
-    )
+    .filter(matchesSearch)
     .sort((a, b) => a.order - b.order);
 
   return {

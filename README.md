@@ -1,6 +1,33 @@
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+这是一个 React 19 待办事项应用，数据完全保存在客户端浏览器（SQLite WASM + OPFS），不经过服务器。
+
+## 亮点
+
+- 任务拖拽排序、优先级排序、完成状态筛选
+- 快速模糊搜索（与筛选联动）
+- 列表滚动分页（自动加载 + “加载更多”）
+- 深浅色主题、中文/英文切换
+- 隐私优先：数据仅保存在本地浏览器 OPFS
+
+## 存储与隐私
+
+- 存储方案：SQLite WASM + OPFS（Origin Private File System）
+- 运行位置：Web Worker 中执行数据库读写
+- 虚拟路径：`/todo-app/todos.sqlite3`（浏览器内部虚拟路径，用户不可见）
+- 不依赖服务端，数据不会上传
+
+## 依赖与运行
+
+```bash
+npm install
+npm run dev
+```
+
+## 运行要求
+
+- 需要 COOP/COEP 响应头以启用 OPFS/WASM 能力
+- 开发环境已在 `vite.config.ts` 中配置
 
 Currently, two official plugins are available:
 
