@@ -37,6 +37,12 @@ export const translations: Record<Language, Record<string, string>> = {
     priority: '优先级',
     footer: '用 ♥ 打造，让生活更美好',
     storageNote: '数据仅存于本地浏览器（SQLite WASM + OPFS），不上传服务器',
+    deleteAll: '全部删除',
+    deleteBatch: '批量删除',
+    confirmDeleteTitle: '确认删除',
+    confirmDeleteAll: '将删除全部任务（共 {count} 条），该操作不可撤销。',
+    confirmDeleteBatch: '将删除当前筛选/搜索结果中的任务（共 {count} 条），该操作不可撤销。',
+    confirmDelete: '确认删除',
   },
   en: {
     title: 'Flowy Todo',
@@ -74,6 +80,12 @@ export const translations: Record<Language, Record<string, string>> = {
     priority: 'Priority',
     footer: 'Made with ♥ to make life better',
     storageNote: 'Data stays in your browser (SQLite WASM + OPFS), never uploaded',
+    deleteAll: 'Delete All',
+    deleteBatch: 'Delete Batch',
+    confirmDeleteTitle: 'Confirm Deletion',
+    confirmDeleteAll: 'This will delete all tasks ({count}). This action cannot be undone.',
+    confirmDeleteBatch: 'This will delete tasks in current filter/search ({count}). This action cannot be undone.',
+    confirmDelete: 'Delete',
   },
 };
 

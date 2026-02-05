@@ -10,9 +10,11 @@ import { t } from '../locales';
 
 interface TodoItemProps {
   todo: Todo;
+  selected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
-export function TodoItem({ todo }: TodoItemProps) {
+export function TodoItem({ todo, selected = false, onToggleSelect }: TodoItemProps) {
   const [editContent, setEditContent] = useState(todo.content);
   const [showDetail, setShowDetail] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -125,28 +127,62 @@ export function TodoItem({ todo }: TodoItemProps) {
         }`}
       >
       <div className="flex flex-row sm:flex-col items-center gap-3 sm:gap-2">
-        <button
-          onClick={() => toggleTodo(todo.id)}
-          className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all ${
-            todo.completed
-              ? 'bg-[color:var(--color-primary)] border-transparent'
-              : 'border-[color:var(--color-border)]'
-          }`}
-        >
-          {todo.completed && (
-            <Check className="w-4 h-4 text-[color:var(--color-primary-foreground)]" />
-          )}
-        </button>
-        <button
-          type="button"
-          className="w-7 h-7 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-secondary)] text-[color:var(--color-muted-foreground)] flex items-center justify-center hover:text-[color:var(--color-foreground)] cursor-grab active:cursor-grabbing"
-          {...attributes}
-          {...listeners}
-          aria-label={language === 'zh' ? '拖拽排序' : 'Drag to reorder'}
-          title={language === 'zh' ? '拖拽排序' : 'Drag to reorder'}
-        >
-          <GripVertical className="w-4 h-4" />
-        </button>
+        <div className="flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onToggleSelect?.(todo.id)}
+            className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all ${
+              selected
+                ? 'bg-[color:var(--color-primary)] border-[color:var(--color-primary)]'
+                : 'border-[color:var(--color-border)]'
+            }`}
+            aria-label={language === 'zh' ? '勾选删除' : 'Select for deletion'}
+            title={language === 'zh' ? '勾选删除' : 'Select for deletion'}
+          >
+            {selected && (
+              <Check className="w-4 h-4 text-[color:var(--color-primary-foreground)]" />
+            )}
+          </button>
+          <span className="text-[10px] text-[color:var(--color-muted-foreground)]">
+            {language === 'zh' ? '勾选' : 'Select'}
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center gap-2">
+          <button
+            onClick={() => toggleTodo(todo.id)}
+            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+              todo.completed
+                ? 'bg-[color:var(--color-primary)] border-transparent'
+                : 'border-[color:var(--color-border)]'
+            }`}
+            aria-label={language === 'zh' ? '完成状态' : 'Toggle complete'}
+            title={language === 'zh' ? '完成状态' : 'Toggle complete'}
+          >
+            {todo.completed && (
+              <Check className="w-4 h-4 text-[color:var(--color-primary-foreground)]" />
+            )}
+          </button>
+          <span className="text-[10px] text-[color:var(--color-muted-foreground)]">
+            {language === 'zh' ? '完成' : 'Done'}
+          </span>
+        </div>
+
+        <div className="hidden sm:flex flex-col items-center gap-2">
+          <button
+            type="button"
+            className="w-8 h-8 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-secondary)] text-[color:var(--color-muted-foreground)] flex items-center justify-center hover:text-[color:var(--color-foreground)] cursor-grab active:cursor-grabbing"
+            {...attributes}
+            {...listeners}
+            aria-label={language === 'zh' ? '拖拽排序' : 'Drag to reorder'}
+            title={language === 'zh' ? '拖拽排序' : 'Drag to reorder'}
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
+          <span className="text-[10px] text-[color:var(--color-muted-foreground)]">
+            {language === 'zh' ? '排序' : 'Drag'}
+          </span>
+        </div>
       </div>
 
         <div className="flex-1 min-w-0">
@@ -198,6 +234,16 @@ export function TodoItem({ todo }: TodoItemProps) {
           className="w-9 h-9 rounded-[10px] bg-[color:var(--color-secondary)] flex items-center justify-center"
         >
           <Trash2 className="w-4 h-4 text-[color:var(--color-muted-foreground)]" />
+        </button>
+        <button
+          type="button"
+          className="w-8 h-8 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-secondary)] text-[color:var(--color-muted-foreground)] flex items-center justify-center hover:text-[color:var(--color-foreground)] cursor-grab active:cursor-grabbing sm:hidden"
+          {...attributes}
+          {...listeners}
+          aria-label={language === 'zh' ? '拖拽排序' : 'Drag to reorder'}
+          title={language === 'zh' ? '拖拽排序' : 'Drag to reorder'}
+        >
+          <GripVertical className="w-4 h-4" />
         </button>
       </div>
       </div>

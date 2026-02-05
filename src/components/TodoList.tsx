@@ -7,10 +7,13 @@ import { StatsCard } from './StatsCard';
 import { t } from '../locales';
 
 export function TodoList() {
-  const { todos, allTodos } = useTodos();
+  const { todos, allTodos, removeMany } = useTodos();
   const { language, filter, search } = useTodoStore();
   const [page, setPage] = useState(1);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmMode, setConfirmMode] = useState<'all' | 'batch'>('all');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const pageSize = 12;
 
   const allCount = allTodos.length;
@@ -32,6 +35,7 @@ export function TodoList() {
 
   useEffect(() => {
     setPage(1);
+    setSelectedIds(new Set());
     if (listRef.current) {
       listRef.current.scrollTop = 0;
     }
@@ -52,10 +56,35 @@ export function TodoList() {
     }
   };
 
-  const progressText =
-    language === 'zh'
-      ? `已显示 ${visibleTodos.length}/${todos.length}`
-      : `Showing ${visibleTodos.length}/${todos.length}`;
+  const batchTargets = todos.filter((todo) => selectedIds.has(todo.id));
+  const allTargets = allTodos;
+  const batchCount = batchTargets.length;
+  const allCountForDelete = allTargets.length;
+  const confirmCount = confirmMode === 'all' ? allCountForDelete : batchCount;
+
+  const openConfirm = (mode: 'all' | 'batch') => {
+    setConfirmMode(mode);
+    setConfirmOpen(true);
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const ids =
+      confirmMode === 'all'
+        ? allTargets.map((todo) => todo.id)
+        : batchTargets.map((todo) => todo.id);
+    await removeMany(ids);
+    setSelectedIds(new Set());
+    setConfirmOpen(false);
+  };
 
   return (
     <div className="space-y-4">
@@ -74,11 +103,23 @@ export function TodoList() {
           </p>
         ) : (
           <>
-            <div className="flex items-center justify-between text-[12px] text-[color:var(--color-muted-foreground)] px-1">
-              <span>{progressText}</span>
-              <span>
-                {language === 'zh' ? `第 ${page}/${totalPages} 页` : `Page ${page}/${totalPages}`}
-              </span>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => openConfirm('batch')}
+                disabled={batchCount === 0}
+                className="px-4 py-2 rounded-full border border-[color:var(--color-border)] text-[12px] font-semibold text-[color:var(--color-muted-foreground)] hover:text-[color:var(--color-foreground)] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {t('deleteBatch', language)}
+              </button>
+              <button
+                type="button"
+                onClick={() => openConfirm('all')}
+                disabled={allCountForDelete === 0}
+                className="px-4 py-2 rounded-full bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] text-[12px] font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {t('deleteAll', language)}
+              </button>
             </div>
             <div
               ref={listRef}
@@ -91,7 +132,12 @@ export function TodoList() {
               >
                 <div className="space-y-3">
                   {visibleTodos.map((todo) => (
-                    <TodoItem key={todo.id} todo={todo} />
+                    <TodoItem
+                      key={todo.id}
+                      todo={todo}
+                      selected={selectedIds.has(todo.id)}
+                      onToggleSelect={toggleSelect}
+                    />
                   ))}
                 </div>
               </SortableContext>
@@ -110,6 +156,52 @@ export function TodoList() {
           </>
         )}
       </div>
+
+      {confirmOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+          onClick={() => setConfirmOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-card)] p-6 shadow-xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <h3 className="text-[16px] font-bold text-[color:var(--color-foreground)]">
+                {t('confirmDeleteTitle', language)}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="text-[12px] text-[color:var(--color-muted-foreground)] hover:text-[color:var(--color-foreground)]"
+              >
+                {t('cancel', language)}
+              </button>
+            </div>
+            <p className="text-[14px] text-[color:var(--color-foreground)] leading-6">
+              {confirmMode === 'all'
+                ? t('confirmDeleteAll', language).replace('{count}', String(confirmCount))
+                : t('confirmDeleteBatch', language).replace('{count}', String(confirmCount))}
+            </p>
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="px-4 py-2 rounded-full border border-[color:var(--color-border)] text-[12px] font-semibold text-[color:var(--color-muted-foreground)] hover:text-[color:var(--color-foreground)]"
+              >
+                {t('cancel', language)}
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded-full bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] text-[12px] font-semibold shadow-sm"
+              >
+                {t('confirmDelete', language)}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

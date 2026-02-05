@@ -115,6 +115,12 @@ export function useTodos() {
     deleteTodo(id);
   };
 
+  const removeMany = async (ids: string[]) => {
+    if (ids.length === 0) return;
+    await Promise.all(ids.map((id) => todoApi.delete(id)));
+    ids.forEach((id) => deleteTodo(id));
+  };
+
   const editTodo = async (todo: typeof todos[0]) => {
     await todoApi.update(todo);
     updateTodo(todo);
@@ -162,5 +168,6 @@ export function useTodos() {
     editTodo,
     reorder,
     loadTodos,
+    removeMany,
   };
 }
