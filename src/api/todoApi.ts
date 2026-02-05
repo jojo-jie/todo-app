@@ -1,12 +1,5 @@
 import type { Todo } from '../types';
-
-type WorkerRequest =
-  | { id: number; type: 'init' }
-  | { id: number; type: 'getAll' }
-  | { id: number; type: 'create'; payload: Todo }
-  | { id: number; type: 'update'; payload: Todo }
-  | { id: number; type: 'delete'; payload: { id: string } }
-  | { id: number; type: 'reorder'; payload: { todos: Todo[] } };
+import { loadSnapshot, saveSnapshot } from '../utils/idb';
 
 type WorkerResponse = {
   id: number;
@@ -18,7 +11,7 @@ type WorkerResponse = {
 let worker: Worker | null = null;
 let requestId = 0;
 let initPromise: Promise<void> | null = null;
-const pending = new Map<number, { resolve: (value: unknown) => void; reject: (err: Error) => void }>();
+const pending = new Map<number, { resolve: (value: any) => void; reject: (err: Error) => void }>();
 
 const ensureWorker = async () => {
   if (!worker) {
@@ -40,9 +33,11 @@ const ensureWorker = async () => {
   }
 
   await initPromise;
+  const snapshot = await loadSnapshot();
+  if (snapshot.length) await callWorker<void>({ type: 'restore', payload: { todos: snapshot } });
 };
 
-const callWorker = <T>(message: Omit<WorkerRequest, 'id'>): Promise<T> => {
+const callWorker = <T>(message: any): Promise<T> => {
   if (!worker) {
     return Promise.reject(new Error('SQLite worker not initialized'));
   }
@@ -60,18 +55,28 @@ export const todoApi = {
   },
   create: async (todo: Omit<Todo, 'id'>) => {
     await ensureWorker();
-    return callWorker<Todo>({ type: 'create', payload: todo as Todo });
+    const created = await callWorker<Todo>({ type: 'create', payload: todo as Todo });
+    const all = await callWorker<Todo[]>({ type: 'getAll' });
+    await saveSnapshot(all);
+    return created;
   },
   update: async (todo: Todo) => {
     await ensureWorker();
-    return callWorker<Todo>({ type: 'update', payload: todo });
+    const updated = await callWorker<Todo>({ type: 'update', payload: todo });
+    const all = await callWorker<Todo[]>({ type: 'getAll' });
+    await saveSnapshot(all);
+    return updated;
   },
   delete: async (id: string) => {
     await ensureWorker();
     await callWorker<void>({ type: 'delete', payload: { id } });
+    const all = await callWorker<Todo[]>({ type: 'getAll' });
+    await saveSnapshot(all);
   },
   reorder: async (todos: Todo[]) => {
     await ensureWorker();
     await callWorker<void>({ type: 'reorder', payload: { todos } });
+    const all = await callWorker<Todo[]>({ type: 'getAll' });
+    await saveSnapshot(all);
   },
 };

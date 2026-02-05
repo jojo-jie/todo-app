@@ -1,9 +1,9 @@
-import { Check, Moon, Sun } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { t } from '../locales';
 import { useTodoStore } from '../store/todoStore';
 
 export function Header() {
-  const { language, setLanguage, theme, setTheme } = useTodoStore();
+  const { language } = useTodoStore();
 
   return (
     <header className="mb-6">

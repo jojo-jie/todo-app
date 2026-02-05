@@ -7,7 +7,8 @@ type WorkerRequest =
   | { id: number; type: 'create'; payload: Todo }
   | { id: number; type: 'update'; payload: Todo }
   | { id: number; type: 'delete'; payload: { id: string } }
-  | { id: number; type: 'reorder'; payload: { todos: Todo[] } };
+  | { id: number; type: 'reorder'; payload: { todos: Todo[] } }
+  | { id: number; type: 'restore'; payload: { todos: Todo[] } };
 
 type WorkerResponse = {
   id: number;
@@ -26,7 +27,7 @@ const openDatabase = (sqlite: Awaited<ReturnType<typeof sqlite3InitModule>>) => 
     return new sqlite.oo1.OpfsDb(DB_PATH, 'c');
   }
   if (sqlite.oo1?.DB) {
-    return new sqlite.oo1.DB(DB_PATH, 'ct');
+    return new sqlite.oo1.DB(':memory:', 'ct');
   }
   throw new Error('No supported SQLite VFS available in this environment.');
 };
@@ -193,6 +194,14 @@ const handleRequest = async (event: MessageEvent<WorkerRequest>) => {
       case 'reorder':
         await initDb();
         reorderTodos(payload.todos);
+        respond({ id, ok: true });
+        return;
+      case 'restore':
+        await initDb();
+        db?.exec({ sql: 'DELETE FROM todos' });
+        (payload.todos as Todo[]).forEach((t) => {
+          createTodo(t as Todo);
+        });
         respond({ id, ok: true });
         return;
       default:
