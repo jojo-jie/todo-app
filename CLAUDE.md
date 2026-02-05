@@ -4,7 +4,7 @@
 
 ## 项目概述
 
-一个 React 19 待办事项应用，支持拖拽排序、主题切换（深色/浅色/跟随系统）和中英文国际化。数据通过客户端 SQLite WASM + OPFS 持久化存储。
+一个 React 19 待办事项应用，支持拖拽排序、主题切换（深色/浅色/跟随系统）和中英文国际化。数据默认通过客户端 SQLite WASM + OPFS 持久化；在不支持 COOP/COEP 的托管下，回退为 IndexedDB 快照持久化。
 
 ## 命令
 
@@ -30,17 +30,29 @@ npm run lint                  # ESLint 检查
 - `language`: 当前语言 ('zh' | 'en')
 
 ### 数据流
-
-1. **API 层**: [src/api/todoApi.ts](src/api/todoApi.ts) - 发送 Axios 请求到 localhost:3001
-2. **Hooks**: [src/hooks/useTodos.ts](src/hooks/useTodos.ts) - 包装 API 调用，乐观更新
-3. **组件**: 通过 `useTodoStore()` 订阅状态
+1. **API 层**: [src/api/todoApi.ts](src/api/todoApi.ts) - 与 Web Worker 通信，封装增删改查与快照读写
+2. **Hooks**: [src/hooks/useTodos.ts](src/hooks/useTodos.ts) - 包装 API 调用，处理筛选/搜索与乐观更新
+3. **组件**: 通过 `useTodoStore()` 订阅状态与触发操作
 
 ### 数据持久化
-
-- 使用 SQLite WASM，运行在 Web Worker 内，通过 OPFS（Origin Private File System）持久化到浏览器本地存储。
+- 使用 SQLite WASM，运行在 Web Worker 内
+- 优先通过 OPFS（Origin Private File System）持久化；无 COOP/COEP 时使用内存数据库 + IndexedDB 快照持久化
 - 虚拟路径：`/todo-app/todos.sqlite3`（浏览器内部虚拟路径，用户不可见）
 - 依赖：`@sqlite.org/sqlite-wasm`（当前锁定版本：`3.43.0-build1`）
 - 需要 COOP/COEP 响应头（Vite 已配置在 `vite.config.ts`）
+
+### 快照桥接
+
+- 位置：
+  - 主线程快照：`src/utils/idb.ts`，压缩工具：`src/utils/compress.ts`
+  - Worker 处理：`src/workers/sqliteWorker.ts`（支持 `restore`）
+- 行为：
+  - 初始化：主线程读取快照并发送 `restore`，Worker 清空后重建
+  - 变更：每次增删改排序后，主线程读取全部数据并保存快照
+- 快照版本：
+  - v1：`json`，直接存数组
+  - v2：`gzip-json`，使用 CompressionStream 压缩 ArrayBuffer
+  - 自动兼容旧结构（数组或 v1），读取时迁移
 
 ### 国际化
 
@@ -81,4 +93,4 @@ interface Todo {
 Tailwind CSS v4，使用 `dark:` 变体。主容器在浅色模式下使用 `bg-white`，组件需要添加 `dark:` 类以支持深色模式。
 
 ## 注意事项
-每次回答都使用中文
+每次回答都使用中文；变更保持最小化、可追踪；涉及运行命令或写文件时说明目的并确保可复现。
